@@ -45,6 +45,7 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     line-height: 1.5;
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Custom Scrollbars */
@@ -1059,4 +1060,156 @@ body {
     .refresh-btn {
         justify-content: center;
     }
+}
+
+/* Header Actions & Theme Toggle Button */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.theme-toggle-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.theme-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    border-color: var(--border-color-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 242, 254, 0.1);
+}
+
+.theme-icon {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle-btn:hover .theme-icon {
+    transform: rotate(20deg) scale(1.1);
+}
+
+/* Light Theme Overrides */
+body.light-mode {
+    --bg-dark: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-input: #f1f5f9;
+    --border-color: rgba(0, 0, 0, 0.08);
+    --border-color-hover: rgba(0, 0, 0, 0.16);
+    
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    
+    --accent-glow: rgba(0, 242, 254, 0.08);
+}
+
+body.light-mode ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .controls-bar {
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+body.light-mode .update-card {
+    background: var(--bg-card);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+}
+
+body.light-mode .update-card:hover {
+    background: #ffffff;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 242, 254, 0.4);
+}
+
+body.light-mode .update-card.active {
+    background: rgba(0, 242, 254, 0.02);
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);
+}
+
+body.light-mode .card-body code {
+    background: rgba(0, 0, 0, 0.05);
+    color: #b57614;
+    border-color: rgba(0, 0, 0, 0.04);
+}
+
+body.light-mode .theme-toggle-btn {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+body.light-mode .theme-toggle-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .status-indicator {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+body.light-mode .action-btn-secondary {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+body.light-mode .action-btn-secondary:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+body.light-mode .copy-card-btn:hover,
+body.light-mode .select-btn:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+body.light-mode .composer-card {
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+body.light-mode .illustration-wrapper {
+    background: rgba(0, 0, 0, 0.01);
+}
+
+body.light-mode .error-state,
+body.light-mode .empty-state {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+body.light-mode .tweet-submit-btn {
+    background: #0f172a;
+    color: #ffffff;
+}
+
+body.light-mode .tweet-submit-btn:hover {
+    background: #1e293b;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.15);
+}
+
+body.light-mode .filter-pill {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+body.light-mode .filter-pill:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-primary);
+}
+
+body.light-mode .spinner {
+    border: 3px solid rgba(0, 0, 0, 0.05);
+    border-top: 3px solid var(--accent);
 }

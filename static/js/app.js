@@ -32,6 +32,7 @@ const composerClear = document.getElementById('composer-clear');
 
 // Initial setup
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     fetchReleaseNotes();
     setupEventListeners();
 });
@@ -91,6 +92,14 @@ function setupEventListeners() {
     if (exportCsvBtn) {
         exportCsvBtn.addEventListener('click', () => {
             exportToCSV();
+        });
+    }
+
+    // Theme toggle button
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            toggleTheme();
         });
     }
 }
@@ -515,6 +524,49 @@ function startStatusTimer() {
     timeAgoInterval = setInterval(() => {
         updateTimeAgoLabel();
     }, 30000);
+}
+
+// Theme Initialization
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const sunIcon = document.querySelector('.theme-icon.sun');
+    const moonIcon = document.querySelector('.theme-icon.moon');
+    
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        if (sunIcon && moonIcon) {
+            sunIcon.classList.remove('hidden');
+            moonIcon.classList.add('hidden');
+        }
+    } else {
+        document.body.classList.remove('light-mode');
+        if (sunIcon && moonIcon) {
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
+        }
+    }
+}
+
+// Toggle Theme
+function toggleTheme() {
+    const sunIcon = document.querySelector('.theme-icon.sun');
+    const moonIcon = document.querySelector('.theme-icon.moon');
+    
+    document.body.classList.toggle('light-mode');
+    
+    if (document.body.classList.contains('light-mode')) {
+        localStorage.setItem('theme', 'light');
+        if (sunIcon && moonIcon) {
+            sunIcon.classList.remove('hidden');
+            moonIcon.classList.add('hidden');
+        }
+    } else {
+        localStorage.setItem('theme', 'dark');
+        if (sunIcon && moonIcon) {
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
+        }
+    }
 }
 
 // Export current filtered dataset to CSV
