@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>League Patch Pulse</title>
+    <!-- Modern Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation / Left Panel -->
+        <header class="app-header">
+            <div class="logo-area">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2005/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="url(#logo-grad)"/>
+                    <defs>
+                        <linearGradient id="logo-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#00f2fe"/>
+                            <stop offset="1" stop-color="#4facfe"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="logo-text">
+                    <h1>League Patch Pulse</h1>
+                    <p class="subtitle">Streamlined League of Legends patch notes & X sharing</p>
+                </div>
+            </div>
+            
+            <div class="status-indicator" id="feed-status">
+                <span class="status-dot green"></span>
+                <span class="status-label">Initializing...</span>
+            </div>
+        </header>
+
+        <!-- Main Workspace Area -->
+        <main class="app-main">
+            <!-- Left Column: Notes Timeline -->
+            <section class="timeline-section">
+                <!-- Search and Filters Bar -->
+                <div class="controls-bar">
+                    <div class="search-wrapper">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="search-input" placeholder="Search updates (e.g. Aatrox, Teleport, Augments)..." autocomplete="off">
+                    </div>
+                    
+                    <div class="filter-group-container">
+                        <div class="filter-pills" id="filter-pills">
+                            <button class="filter-pill active" data-filter="all">All</button>
+                            <button class="filter-pill" data-filter="feature">Features</button>
+                            <button class="filter-pill" data-filter="issue">Issues</button>
+                            <button class="filter-pill" data-filter="changed">Changes</button>
+                            <button class="filter-pill" data-filter="deprecated">Deprecated</button>
+                        </div>
+
+                        <button id="refresh-btn" class="refresh-btn" title="Refresh Release Notes">
+                            <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                            </svg>
+                            <span>Refresh</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Feed Updates Container -->
+                <div class="timeline-container">
+                    <!-- Loading State -->
+                    <div class="loading-state" id="loading-state">
+                        <div class="spinner"></div>
+                        <p>Fetching League patch notes...</p>
+                    </div>
+
+                    <!-- Error State -->
+                    <div class="error-state hidden" id="error-state">
+                        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <h3>Failed to retrieve release notes</h3>
+                        <p id="error-message">The feed server might be temporarily unavailable.</p>
+                        <button class="action-btn" id="retry-btn">Retry Fetch</button>
+                    </div>
+
+                    <!-- Empty Results -->
+                    <div class="empty-state hidden" id="empty-state">
+                        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M8 12h8"></path>
+                        </svg>
+                        <h3>No release notes match your query</h3>
+                        <p>Try clearing your search query or selecting a different filter.</p>
+                    </div>
+
+                    <!-- Notes List -->
+                    <div class="notes-timeline" id="notes-timeline">
+                        <!-- Dynamic notes injected here by app.js -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Tweet Composer -->
+            <section class="composer-section">
+                <div class="composer-card" id="composer-card">
+                    <!-- Composer Empty State -->
+                    <div class="composer-empty-state" id="composer-empty">
+                        <div class="illustration-wrapper">
+                            <svg class="composer-ill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M22 2L11 13M22 2L15 22L11 13M11 13L2 9L22 2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <h3>Share an Update</h3>
+                        <p>Select any release note update from the feed to load it into the tweet composer.</p>
+                    </div>
+
+                    <!-- Composer Active State -->
+                    <div class="composer-active-state hidden" id="composer-active">
+                        <div class="composer-header">
+                            <span class="composer-title">Compose Tweet</span>
+                            <button class="clear-btn" id="composer-clear" title="Clear selection">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="origin-note-info">
+                            <span class="origin-badge" id="origin-badge">Feature</span>
+                            <span class="origin-date" id="origin-date">June 15, 2026</span>
+                        </div>
+
+                        <div class="textarea-wrapper">
+                            <textarea id="tweet-textarea" rows="8" placeholder="Draft your tweet here..."></textarea>
+                        </div>
+
+                        <div class="composer-toolbar">
+                            <div class="char-counter-wrapper">
+                                <span id="char-counter" class="char-counter">0 / 280</span>
+                            </div>
+                            <div class="toolbar-actions">
+                                <button class="action-btn-secondary" id="auto-shorten-btn" title="Shorten content to fit character limit">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/>
+                                    </svg>
+                                    <span>Auto-Fit</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button class="tweet-submit-btn" id="tweet-submit-btn">
+                            <svg class="twitter-x-logo" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            </svg>
+                            <span>Post to X</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
