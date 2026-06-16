@@ -85,6 +85,14 @@ function setupEventListeners() {
     composerClear.addEventListener('click', () => {
         clearSelection();
     });
+
+    // Export CSV button
+    const exportCsvBtn = document.getElementById('export-csv-btn');
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', () => {
+            exportToCSV();
+        });
+    }
 }
 
 // Fetch notes from Flask API
@@ -243,17 +251,49 @@ function createUpdateCard(update, entry) {
                 <span class="type-badge ${badgeClass}">${update.type}</span>
                 ${statusBadge}
             </div>
-            <button class="select-btn">
-                <svg viewBox="0 0 24 24">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-                <span>${selectedUpdate && selectedUpdate.id === update.id ? 'Selected' : 'Select'}</span>
-            </button>
+            <div class="card-actions">
+                <button class="copy-card-btn" title="Copy changes to clipboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px; margin-right: 0.2rem;">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                </button>
+                <button class="select-btn">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    <span>${selectedUpdate && selectedUpdate.id === update.id ? 'Selected' : 'Select'}</span>
+                </button>
+            </div>
         </div>
         <div class="card-body">
             ${update.content_html}
         </div>
     `;
+
+    // Copy to clipboard handler
+    const copyBtn = card.querySelector('.copy-card-btn');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent selection trigger
+            
+            const textToCopy = `${update.emoji || '📢'} LoL ${patchName} - ${update.title} (${update.type}):\n${update.content_text}\n\nRead more: ${update.link}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                copyBtn.classList.add('copied');
+                const spanText = copyBtn.querySelector('span');
+                if (spanText) spanText.textContent = 'Copied!';
+                
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                    if (spanText) spanText.textContent = 'Copy';
+                }, 1500);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
+    }
 
     card.addEventListener('click', (e) => {
         if (e.target.tagName === 'A' || e.target.closest('a')) {
@@ -475,4 +515,59 @@ function startStatusTimer() {
     timeAgoInterval = setInterval(() => {
         updateTimeAgoLabel();
     }, 30000);
+}
+
+// Export current filtered dataset to CSV
+function exportToCSV() {
+    if (releaseNotes.length === 0) return;
+
+    const dataToExport = [];
+    releaseNotes.forEach(entry => {
+        entry.updates.forEach(update => {
+            const matchesFilter = currentFilter === 'all' || 
+                update.type.toLowerCase() === currentFilter;
+                
+            const matchesSearch = searchQuery === '' || 
+                update.title.toLowerCase().includes(searchQuery) ||
+                update.type.toLowerCase().includes(searchQuery) ||
+                update.content_text.toLowerCase().includes(searchQuery);
+                
+            if (matchesFilter && matchesSearch) {
+                dataToExport.push({
+                    section: update.type,
+                    title: update.title,
+                    changes: update.content_text,
+                    link: update.link
+                });
+            }
+        });
+    });
+
+    if (dataToExport.length === 0) {
+        alert("No updates to export matching current filter.");
+        return;
+    }
+
+    // Build CSV content escaping quotes and handling commas
+    const csvRows = ["Section,Title,Changes,Link"];
+    dataToExport.forEach(row => {
+        const sectionEsc = `"${row.section.replace(/"/g, '""')}"`;
+        const titleEsc = `"${row.title.replace(/"/g, '""')}"`;
+        const changesEsc = `"${row.changes.replace(/"/g, '""')}"`;
+        const linkEsc = `"${row.link.replace(/"/g, '""')}"`;
+        csvRows.push(`${sectionEsc},${titleEsc},${changesEsc},${linkEsc}`);
+    });
+
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    const safePatchName = patchName.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+    link.setAttribute("href", url);
+    link.setAttribute("download", `lol_${safePatchName}_notes.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }

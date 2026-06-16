@@ -554,6 +554,45 @@ body {
 }
 
 
+.action-buttons-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.copy-card-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: var(--transition);
+}
+
+.copy-card-btn:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.copy-card-btn.copied {
+    border-color: #10b981;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.05);
+}
+
+
 /* Select Button */
 .select-btn {
     background: transparent;
